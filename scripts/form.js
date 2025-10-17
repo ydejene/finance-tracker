@@ -1,103 +1,189 @@
-// validators.js - Validation logic module (IIFE pattern)
+// form.js - Handle form display, validation, and submission
 
-const Validators = (function () {
-  "use strict";
+import {
+  validateDescription,
+  validateAmount,
+  validateDate,
+  validateCategory,
+} from "./validators.js";
 
-  // REGEX PATTERNS
+// form elements
+const formSection = document.getElementById("form-section");
+const form = document.getElementById("transaction-form");
+const formTitle = document.getElementById("form-title");
+const addBtn = document.getElementById("add-transaction-btn");
+const cancelBtn = document.getElementById("cancel-form-btn");
 
-  const descriptionRegex = /^\S+(\s\S+)*$/;
-  const amountRegex = /^(0|[1-9]\d*)(\.\d{1,2})?$/;
-  const dateRegex = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
-  const categoryRegex = /^[A-Za-z]+(?:[ -][A-Za-z]+)*$/;
-  const duplicateWordsRegex = /\b(\w+)\s+\1\b/i;
+// form fields
+const descriptionInput = document.getElementById("description");
+const amountInput = document.getElementById("amount");
+const categoryInput = document.getElementById("category");
+const dateInput = document.getElementById("date");
+const transactionIdInput = document.getElementById("transaction-id");
 
-  // VALIDATION FUNCTIONS
+// error messages
+const descriptionError = document.getElementById("description-error");
+const amountError = document.getElementById("amount-error");
+const categoryError = document.getElementById("category-error");
+const dateError = document.getElementById("date-error");
 
-  function validateDescription(value) {
-    if (!value || value.trim() === "") {
-      return "Description is required";
-    }
-    if (!descriptionRegex.test(value)) {
-      return "No leading/trailing spaces or double spaces allowed";
-    }
-    if (duplicateWordsRegex.test(value)) {
-      return "Description contains duplicate words";
-    }
-    return null;
+let isEditMode = false;
+
+export function showForm(transaction = null) {
+  formSection.style.display = "block";
+  formSection.scrollIntoView({ behavior: "smooth" });
+
+  if (transaction) {
+    isEditMode = true;
+    formTitle.textContent = "Edit Transaction";
+
+    descriptionInput.value = transaction.description;
+    amountInput.value = transaction.amount;
+    categoryInput.value = transaction.category;
+    dateInput.value = transaction.date;
+    transactionIdInput.value = transaction.id;
+  } else {
+    isEditMode = false;
+    formTitle.textContent = "Add Transaction";
+    form.reset();
+    transactionIdInput.value = "";
+
+    // Set default date to today
+    const today = new Date().toISOString().split("T")[0];
+    dateInput.value = today;
   }
 
-  
-  function validateAmount(value) {
-    if (!value || value.trim() === "") {
-      return "Amount is required";
-    }
-    if (!amountRegex.test(value)) {
-      return "Must be a valid number (e.g., 12.50)";
-    }
-    const num = parseFloat(value);
-    if (num < 0) return "Cannot be negative";
-    if (num > 999999) return "Amount too large";
-    return null;
+  clearErrors();
+
+  descriptionInput.focus();
+}
+
+
+export function hideForm() {
+  formSection.style.display = "none";
+  form.reset();
+  clearErrors();
+}
+
+
+function clearErrors() {
+  descriptionError.textContent = "";
+  amountError.textContent = "";
+  categoryError.textContent = "";
+  dateError.textContent = "";
+}
+
+
+function showError(errorElement, message) {
+  errorElement.textContent = message;
+  errorElement.parentElement
+    .querySelector("input, select")
+    .setAttribute("aria-invalid", "true");
+}
+
+
+function clearError(errorElement) {
+  errorElement.textContent = "";
+  errorElement.parentElement
+    .querySelector("input, select")
+    .removeAttribute("aria-invalid");
+}
+
+/**
+ * Validate a single field and show/hide error
+ */
+function validateField(input, validateFunc, errorElement) {
+  const error = validateFunc(input.value);
+
+  if (error) {
+    showError(errorElement, error);
+    return false;
+  } else {
+    clearError(errorElement);
+    return true;
   }
+}
 
-  function validateDate(value) {
-    if (!value || value.trim() === "") {
-      return "Date is required";
-    }
-    if (!dateRegex.test(value)) {
-      return "Must be in YYYY-MM-DD format";
-    }
-    const dateObj = new Date(value);
-    if (isNaN(dateObj.getTime())) {
-      return "Invalid date";
-    }
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    if (dateObj > today) {
-      return "Cannot be in the future";
-    }
-    return null;
-  }
+/**
+ * Initialize form event listeners
+ */
+export function initForm() {
+  addBtn.addEventListener("click", () => {
+    showForm();
+  });
 
-  function validateCategory(value) {
-    if (!value || value.trim() === "") {
-      return "Please select a category";
-    }
-    return null;
-  }
+  cancelBtn.addEventListener("click", () => {
+    hideForm();
+  });
 
-  function validateTransaction(transaction) {
-    const errors = {};
+  descriptionInput.addEventListener("blur", () => {
+    validateField(descriptionInput, validateDescription, descriptionError);
+  });
 
-    const descError = validateDescription(transaction.description);
-    if (descError) errors.description = descError;
+  amountInput.addEventListener("blur", () => {
+    validateField(amountInput, validateAmount, amountError);
+  });
 
-    const amtError = validateAmount(transaction.amount);
-    if (amtError) errors.amount = amtError;
+  categoryInput.addEventListener("change", () => {
+    validateField(categoryInput, validateCategory, categoryError);
+  });
 
-    const catError = validateCategory(transaction.category);
-    if (catError) errors.category = catError;
+  dateInput.addEventListener("blur", () => {
+    validateField(dateInput, validateDate, dateError);
+  });
 
-    const dtError = validateDate(transaction.date);
-    if (dtError) errors.date = dtError;
+  form.addEventListener("submit", handleSubmit);
+}
 
-    return errors;
-  }
+/**
+ * Handle form submission
+ */
+function handleSubmit(e) {
+  e.preventDefault();
 
-  // PUBLIC API
-
-  return {
+  // Validate all fields
+  const isDescValid = validateField(
+    descriptionInput,
     validateDescription,
-    validateAmount,
-    validateDate,
+    descriptionError
+  );
+  const isAmountValid = validateField(amountInput, validateAmount, amountError);
+  const isCategoryValid = validateField(
+    categoryInput,
     validateCategory,
-    validateTransaction,
-    patterns: {
-      description: descriptionRegex,
-      amount: amountRegex,
-      date: dateRegex,
-      category: categoryRegex,
-      duplicateWords: duplicateWordsRegex,
-    },
+    categoryError
+  );
+  const isDateValid = validateField(dateInput, validateDate, dateError);
+
+  // If any field is invalid, stop
+  if (!isDescValid || !isAmountValid || !isCategoryValid || !isDateValid) {
+    if (!isDescValid) descriptionInput.focus();
+    else if (!isAmountValid) amountInput.focus();
+    else if (!isCategoryValid) categoryInput.focus();
+    else if (!isDateValid) dateInput.focus();
+    return;
+  }
+
+  // All valid! Create transaction object
+  const transaction = {
+    id: transactionIdInput.value || generateId(),
+    description: descriptionInput.value.trim(),
+    amount: parseFloat(amountInput.value),
+    category: categoryInput.value,
+    date: dateInput.value,
+    createdAt: transactionIdInput.value ? undefined : new Date().toISOString(), 
+    updatedAt: new Date().toISOString(),
   };
-})();
+
+  console.log("Transaction to save:", transaction);
+
+  hideForm();
+
+  alert(isEditMode ? "Transaction updated!" : "Transaction added!");
+}
+
+// unique transaction ID
+ 
+function generateId() {
+  return "txn_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
+}
