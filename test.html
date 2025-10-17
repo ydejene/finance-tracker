@@ -64,10 +64,9 @@
     <div id="test-results"></div>
 
     <script>
-      // Copy validators directly into this file (no imports needed)
 
-      // 1. Description: No leading/trailing spaces, no double spaces
-      const descriptionRegex = /^\S(?:.*\S)?$/;
+      // 1. No leading/trailing spaces, no double spaces
+      const descriptionRegex = /^\S+(\s\S+)*$/;
 
       // 2. Amount: Valid currency format
       const amountRegex = /^(0|[1-9]\d*)(\.\d{1,2})?$/;
