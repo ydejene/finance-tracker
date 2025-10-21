@@ -22,39 +22,58 @@
 
   function attachEventListeners() {
     // Add Transaction button
-    document
-      .getElementById("add-transaction-btn")
-      .addEventListener("click", handleAddClick);
+    const addBtn = document.getElementById("add-transaction-btn");
+    if (addBtn) {
+      addBtn.addEventListener("click", handleAddClick);
+    } else {
+      console.error("Add transaction button not found!");
+    }
 
-    document
-      .getElementById("cancel-form-btn")
-      .addEventListener("click", handleCancelClick);
+    // Cancel button
+    const cancelBtn = document.getElementById("cancel-form-btn");
+    if (cancelBtn) {
+      cancelBtn.addEventListener("click", handleCancelClick);
+    } else {
+      console.error("Cancel button not found!");
+    }
 
     // Form submission
-    UI.elements.transactionForm.addEventListener("submit", handleFormSubmit);
+    if (UI.elements.transactionForm) {
+      UI.elements.transactionForm.addEventListener("submit", handleFormSubmit);
+    }
 
     // Real-time validation
-    UI.elements.descriptionInput.addEventListener("input", () => {
-      validateField("description", UI.elements.descriptionInput.value);
-    });
+    if (UI.elements.descriptionInput) {
+      UI.elements.descriptionInput.addEventListener("input", () => {
+        validateField("description", UI.elements.descriptionInput.value);
+      });
+    }
 
-    UI.elements.amountInput.addEventListener("input", () => {
-      validateField("amount", UI.elements.amountInput.value);
-    });
+    if (UI.elements.amountInput) {
+      UI.elements.amountInput.addEventListener("input", () => {
+        validateField("amount", UI.elements.amountInput.value);
+      });
+    }
 
-    UI.elements.dateInput.addEventListener("change", () => {
-      validateField("date", UI.elements.dateInput.value);
-    });
+    if (UI.elements.dateInput) {
+      UI.elements.dateInput.addEventListener("change", () => {
+        validateField("date", UI.elements.dateInput.value);
+      });
+    }
 
-    UI.elements.categoryInput.addEventListener("change", () => {
-      validateField("category", UI.elements.categoryInput.value);
-    });
+    if (UI.elements.categoryInput) {
+      UI.elements.categoryInput.addEventListener("change", () => {
+        validateField("category", UI.elements.categoryInput.value);
+      });
+    }
 
     // Edit/Delete buttons (event delegation)
-    UI.elements.transactionsContainer.addEventListener(
-      "click",
-      handleTableClick
-    );
+    if (UI.elements.transactionsContainer) {
+      UI.elements.transactionsContainer.addEventListener(
+        "click",
+        handleTableClick
+      );
+    }
   }
 
   // BUTTON HANDLERS
@@ -72,11 +91,13 @@
   function handleTableClick(e) {
     const target = e.target;
 
+    // Edit button clicked
     if (target.classList.contains("edit-btn")) {
       const id = target.dataset.id;
       handleEdit(id);
     }
 
+    // Delete button clicked
     if (target.classList.contains("delete-btn")) {
       const id = target.dataset.id;
       handleDelete(id);
@@ -110,12 +131,14 @@
     const formData = UI.getFormData();
     const errors = Validators.validateTransaction(formData);
 
+    // Show all errors
     UI.clearErrors();
     if (errors.description) UI.showError("description", errors.description);
     if (errors.amount) UI.showError("amount", errors.amount);
     if (errors.category) UI.showError("category", errors.category);
     if (errors.date) UI.showError("date", errors.date);
 
+    // If any errors, stop
     if (Object.keys(errors).length > 0) {
       alert("Please fix all errors before saving.");
       return;
