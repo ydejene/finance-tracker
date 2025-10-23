@@ -74,6 +74,27 @@
         handleTableClick
       );
     }
+
+    // Close modal when clicking backdrop (outside the form)
+    const modalBackdrop = document.getElementById("modal-backdrop");
+    if (modalBackdrop) {
+      modalBackdrop.addEventListener("click", function (e) {
+        // Only close if clicking the backdrop itself, not the form
+        if (e.target === modalBackdrop) {
+          handleCancelClick();
+        }
+      });
+    }
+
+    // Close modal with Escape key (accessibility!)
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") {
+        const modalBackdrop = document.getElementById("modal-backdrop");
+        if (modalBackdrop && modalBackdrop.style.display === "flex") {
+          handleCancelClick();
+        }
+      }
+    });
   }
 
   // BUTTON HANDLERS

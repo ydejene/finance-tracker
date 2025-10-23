@@ -28,7 +28,10 @@ const UI = (function () {
   // FORM MANAGEMENT
 
   function showForm(mode = "add", transaction = null) {
-    elements.formSection.style.display = "block";
+    const modalBackdrop = document.getElementById("modal-backdrop");
+
+    // Show modal
+    modalBackdrop.style.display = "flex";
     clearErrors();
 
     if (mode === "add") {
@@ -44,11 +47,15 @@ const UI = (function () {
       elements.transactionIdInput.value = transaction.id;
     }
 
-    elements.formSection.scrollIntoView({ behavior: "smooth" });
+    // Focus first input for accessibility
+    setTimeout(() => {
+      elements.descriptionInput.focus();
+    }, 100);
   }
 
   function hideForm() {
-    elements.formSection.style.display = "none";
+    const modalBackdrop = document.getElementById("modal-backdrop");
+    modalBackdrop.style.display = "none";
     elements.transactionForm.reset();
     clearErrors();
   }
