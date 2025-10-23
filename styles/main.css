@@ -423,6 +423,11 @@ input[aria-invalid="true"]:focus {
   margin-top: 0;
 }
 
+/* Prevent body scroll when modal is open */
+body.modal-open {
+  overflow: hidden;
+}
+
 /* ==========================================
    TRANSACTIONS SECTION
    ========================================== */

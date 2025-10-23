@@ -32,6 +32,10 @@ const UI = (function () {
 
     // Show modal
     modalBackdrop.style.display = "flex";
+
+    // Prevent body scroll
+    document.body.classList.add("modal-open");
+
     clearErrors();
 
     if (mode === "add") {
@@ -56,6 +60,10 @@ const UI = (function () {
   function hideForm() {
     const modalBackdrop = document.getElementById("modal-backdrop");
     modalBackdrop.style.display = "none";
+
+    // Re-enable body scroll
+    document.body.classList.remove("modal-open");
+
     elements.transactionForm.reset();
     clearErrors();
   }
