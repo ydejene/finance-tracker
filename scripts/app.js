@@ -7,9 +7,26 @@
 
   function init() {
     State.initialize();
+    loadSettingsUI(); // Add this line
     renderAll();
     attachEventListeners();
     console.log("Finance Tracker initialized!");
+  }
+
+  function loadSettingsUI() {
+    const settings = State.getSettings();
+
+    // Load budget cap
+    const budgetInput = document.getElementById("budget-cap-input");
+    if (budgetInput && settings.budgetCap) {
+      budgetInput.value = settings.budgetCap;
+    }
+
+    // Load currency rates
+    const eurRateInput = document.getElementById("eur-rate");
+    const gbpRateInput = document.getElementById("gbp-rate");
+    if (eurRateInput) eurRateInput.value = settings.currencyRates.EUR;
+    if (gbpRateInput) gbpRateInput.value = settings.currencyRates.GBP;
   }
 
   function renderAll() {
@@ -95,6 +112,36 @@
         }
       }
     });
+    // Settings buttons
+    const saveBudgetBtn = document.getElementById("save-budget-btn");
+    if (saveBudgetBtn) {
+      saveBudgetBtn.addEventListener("click", handleSaveBudget);
+    }
+
+    const saveRatesBtn = document.getElementById("save-rates-btn");
+    if (saveRatesBtn) {
+      saveRatesBtn.addEventListener("click", handleSaveCurrencyRates);
+    }
+
+    const importBtn = document.getElementById("import-btn");
+    if (importBtn) {
+      importBtn.addEventListener("click", handleImport);
+    }
+
+    const importFile = document.getElementById("import-file");
+    if (importFile) {
+      importFile.addEventListener("change", handleImportFile);
+    }
+
+    const exportBtn = document.getElementById("export-btn");
+    if (exportBtn) {
+      exportBtn.addEventListener("click", handleExport);
+    }
+
+    const loadSampleBtn = document.getElementById("load-sample-btn");
+    if (loadSampleBtn) {
+      loadSampleBtn.addEventListener("click", handleLoadSample);
+    }
   }
 
   // BUTTON HANDLERS
@@ -257,6 +304,193 @@
     return transactions
       .filter((t) => new Date(t.date) >= sevenDaysAgo)
       .reduce((sum, t) => sum + t.amount, 0);
+  }
+
+  // SETTINGS HANDLERS
+
+  function handleSaveBudget() {
+    const budgetInput = document.getElementById("budget-cap-input");
+    const budgetValue = parseFloat(budgetInput.value);
+
+    if (isNaN(budgetValue) || budgetValue <= 0) {
+      alert("Please enter a valid budget amount");
+      return;
+    }
+
+    const settings = State.getSettings();
+    settings.budgetCap = budgetValue;
+    State.updateSettings(settings);
+
+    alert(`Budget cap set to $${budgetValue.toFixed(2)}`);
+    updateDashboard(); // Refresh to show new budget status
+  }
+
+  function handleSaveCurrencyRates() {
+    const eurRate = parseFloat(document.getElementById("eur-rate").value);
+    const gbpRate = parseFloat(document.getElementById("gbp-rate").value);
+
+    if (isNaN(eurRate) || eurRate <= 0 || isNaN(gbpRate) || gbpRate <= 0) {
+      alert("Please enter valid exchange rates");
+      return;
+    }
+
+    const settings = State.getSettings();
+    settings.currencyRates = { EUR: eurRate, GBP: gbpRate };
+    State.updateSettings(settings);
+
+    alert("Currency rates updated successfully");
+  }
+
+  function handleImport() {
+    const fileInput = document.getElementById("import-file");
+    fileInput.click(); // Trigger file picker
+  }
+
+  function handleImportFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      try {
+        const data = JSON.parse(e.target.result);
+        const validation = Storage.validateImportedData(data);
+
+        if (!validation.valid) {
+          alert(`Import failed: ${validation.error}`);
+          return;
+        }
+
+        // Confirm before overwriting
+        const confirmed = confirm(
+          `Import ${data.length} transactions? This will replace your current data.`
+        );
+        if (!confirmed) return;
+
+        State.setTransactions(data);
+        renderAll();
+        alert(`Successfully imported ${data.length} transactions!`);
+      } catch (error) {
+        alert("Invalid JSON file. Please check the format.");
+        console.error("Import error:", error);
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  function handleExport() {
+    const transactions = State.getAllTransactions();
+    if (transactions.length === 0) {
+      alert("No transactions to export");
+      return;
+    }
+
+    Storage.exportToJSON(transactions);
+    alert(`Exported ${transactions.length} transactions`);
+  }
+
+  function handleLoadSample() {
+    const confirmed = confirm(
+      "Load sample data? This will replace your current transactions."
+    );
+    if (!confirmed) return;
+
+    const sampleData = [
+      {
+        id: "txn_001",
+        description: "Lunch at cafeteria",
+        amount: 12.5,
+        category: "Food",
+        date: "2024-10-15",
+        createdAt: new Date("2024-10-15T12:00:00Z").toISOString(),
+        updatedAt: new Date("2024-10-15T12:00:00Z").toISOString(),
+      },
+      {
+        id: "txn_002",
+        description: "Chemistry textbook",
+        amount: 89.99,
+        category: "Books",
+        date: "2024-10-14",
+        createdAt: new Date("2024-10-14T10:00:00Z").toISOString(),
+        updatedAt: new Date("2024-10-14T10:00:00Z").toISOString(),
+      },
+      {
+        id: "txn_003",
+        description: "Monthly bus pass",
+        amount: 45.0,
+        category: "Transport",
+        date: "2024-10-13",
+        createdAt: new Date("2024-10-13T09:00:00Z").toISOString(),
+        updatedAt: new Date("2024-10-13T09:00:00Z").toISOString(),
+      },
+      {
+        id: "txn_004",
+        description: "Coffee with friends",
+        amount: 8.75,
+        category: "Entertainment",
+        date: "2024-10-20",
+        createdAt: new Date("2024-10-20T15:00:00Z").toISOString(),
+        updatedAt: new Date("2024-10-20T15:00:00Z").toISOString(),
+      },
+      {
+        id: "txn_005",
+        description: "Gym membership",
+        amount: 35.0,
+        category: "Other",
+        date: "2024-10-18",
+        createdAt: new Date("2024-10-18T08:00:00Z").toISOString(),
+        updatedAt: new Date("2024-10-18T08:00:00Z").toISOString(),
+      },
+      {
+        id: "txn_006",
+        description: "Groceries for week",
+        amount: 67.43,
+        category: "Food",
+        date: "2024-10-17",
+        createdAt: new Date("2024-10-17T18:00:00Z").toISOString(),
+        updatedAt: new Date("2024-10-17T18:00:00Z").toISOString(),
+      },
+      {
+        id: "txn_007",
+        description: "Notebook and pens",
+        amount: 15.99,
+        category: "Books",
+        date: "2024-10-16",
+        createdAt: new Date("2024-10-16T11:00:00Z").toISOString(),
+        updatedAt: new Date("2024-10-16T11:00:00Z").toISOString(),
+      },
+      {
+        id: "txn_008",
+        description: "Uber to campus",
+        amount: 12.3,
+        category: "Transport",
+        date: "2024-10-21",
+        createdAt: new Date("2024-10-21T07:00:00Z").toISOString(),
+        updatedAt: new Date("2024-10-21T07:00:00Z").toISOString(),
+      },
+      {
+        id: "txn_009",
+        description: "Movie tickets",
+        amount: 24.0,
+        category: "Entertainment",
+        date: "2024-10-19",
+        createdAt: new Date("2024-10-19T20:00:00Z").toISOString(),
+        updatedAt: new Date("2024-10-19T20:00:00Z").toISOString(),
+      },
+      {
+        id: "txn_010",
+        description: "Lab fees",
+        amount: 50.0,
+        category: "Fees",
+        date: "2024-10-12",
+        createdAt: new Date("2024-10-12T10:00:00Z").toISOString(),
+        updatedAt: new Date("2024-10-12T10:00:00Z").toISOString(),
+      },
+    ];
+
+    State.setTransactions(sampleData);
+    renderAll();
+    alert("Sample data loaded successfully!");
   }
 
   // START APPLICATION
