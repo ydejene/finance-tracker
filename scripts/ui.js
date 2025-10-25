@@ -158,10 +158,10 @@ const UI = (function () {
             <td class="actions">
                 <button class="edit-btn" data-id="${
                   transaction.id
-                }">✏️ Edit</button>
+                }"> Edit</button>
                 <button class="delete-btn" data-id="${
                   transaction.id
-                }">🗑️ Delete</button>
+                }"> Delete</button>
             </td>
         `;
 
