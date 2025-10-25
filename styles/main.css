@@ -256,16 +256,76 @@ button:disabled {
 
 /* Chart Container */
 .chart-container {
-  background: var(--bg-color);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-lg);
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
 }
 
-.chart-placeholder {
-  text-align: center;
-  padding: var(--spacing-xl);
-  color: var(--text-secondary);
+.bar-chart {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    height: 200px;
+    padding: var(--spacing-md);
+    background: var(--surface-color);
+    border-radius: var(--radius-sm);
+    gap: var(--spacing-xs);
+}
+
+.chart-bar {
+    flex: 1;
+    background: linear-gradient(to top, var(--primary-color), #60a5fa);
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    min-height: 10px;
+    position: relative;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.chart-bar:hover {
+    background: linear-gradient(to top, var(--primary-hover), var(--primary-color));
+    transform: translateY(-5px);
+}
+
+.chart-bar-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: var(--spacing-xs);
+    text-align: center;
+    position: absolute;
+    bottom: -25px;
+    white-space: nowrap;
+}
+
+.chart-bar-value {
+    font-size: 0.75rem;
+    color: white;
+    font-weight: 600;
+    padding: var(--spacing-xs);
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--spacing-xs);
+}
+
+.chart-total {
+    text-align: center;
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-top: var(--spacing-lg);
+    color: var(--text-primary);
+}
+
+.chart-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    color: var(--text-muted);
 }
 
 .visually-hidden {

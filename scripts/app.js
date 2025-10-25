@@ -265,6 +265,9 @@
     };
 
     UI.updateStats(stats);
+
+    const chartData = generateChartData(transactions);
+    UI.renderChart(chartData);
   }
 
   function getTopCategory(transactions) {
@@ -304,6 +307,36 @@
     return transactions
       .filter((t) => new Date(t.date) >= sevenDaysAgo)
       .reduce((sum, t) => sum + t.amount, 0);
+  }
+
+  function generateChartData(transactions) {
+    const today = new Date();
+    const chartData = [];
+    
+    // Generate last 7 days
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(today.getDate() - i);
+      date.setHours(0, 0, 0, 0);
+      
+      const dateStr = date.toISOString().split('T')[0];
+      
+      // Sum transactions for this day
+      const dayTotal = transactions
+        .filter(t => t.date === dateStr)
+        .reduce((sum, t) => sum + t.amount, 0);
+      
+      // Format label (e.g., "Mon", "Tue")
+      const dayLabel = date.toLocaleDateString('en-US', { weekday: 'short' });
+      
+      chartData.push({
+        date: dateStr,
+        label: dayLabel,
+        amount: dayTotal
+      });
+    }
+    
+    return chartData;
   }
 
   // SETTINGS HANDLERS

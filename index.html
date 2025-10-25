@@ -11,7 +11,7 @@
     <a href="#main-content" class="skip-link">Skip to the main content</a>
 
     <header>
-      <img src="./assets/images/logo.png"  id="logo-image" alt="logo image">
+      <img src="./assets/images/logo.png" id="logo-image" alt="logo image" />
       <nav>
         <ul>
           <li><a href="#dashboard">Dashboard</a></li>
@@ -65,12 +65,9 @@
         <div class="chart-container">
           <h3>Last 7 Days Spendings</h3>
           <div id="chart" class="bar-chart">
-            <!-- bars wiht Js -->
-            <div class="chart-placeholder">
-              <p>Total: <span id="last-7-days">$0.00</span></p>
-              <p class="helper-text">Chart visualization coming soon</p>
-            </div>
+            <!-- the bars will be genarated using Js -->
           </div>
+          <p class="chart-total">Total: <span id="last-7-days">$0.00</span></p>
         </div>
 
         <!-- ARIA Live Alert for Budget -->
@@ -95,7 +92,7 @@
 
         <!-- Data Management Toolbar -->
         <div class="data-toolbar">
-          <button id="import-btn" class="secondary-btn"> Import</button>
+          <button id="import-btn" class="secondary-btn">Import</button>
           <input
             type="file"
             id="import-file"

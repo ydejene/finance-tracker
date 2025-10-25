@@ -220,6 +220,47 @@ const UI = (function () {
     }
   }
 
+  function renderChart(chartData) {
+    const chartContainer = document.getElementById("chart");
+
+    if (chartData.length === 0) {
+      chartContainer.innerHTML =
+        '<div class="chart-empty">No data for last 7 days</div>';
+      return;
+    }
+
+    // Find max value for scaling
+    const maxAmount = Math.max(...chartData.map((d) => d.amount));
+
+    // Clear and create bars
+    chartContainer.innerHTML = "";
+
+    chartData.forEach((day) => {
+      const bar = document.createElement("div");
+      bar.className = "chart-bar";
+
+      // Calculate height as percentage of max (min 10% for visibility)
+      const heightPercent = maxAmount > 0 ? (day.amount / maxAmount) * 100 : 10;
+      bar.style.height = `${Math.max(heightPercent, 10)}%`;
+
+      // Add value label on bar
+      if (day.amount > 0) {
+        const valueLabel = document.createElement("span");
+        valueLabel.className = "chart-bar-value";
+        valueLabel.textContent = `$${day.amount.toFixed(0)}`;
+        bar.appendChild(valueLabel);
+      }
+
+      // Add date label below bar
+      const label = document.createElement("div");
+      label.className = "chart-bar-label";
+      label.textContent = day.label;
+      bar.appendChild(label);
+
+      chartContainer.appendChild(bar);
+    });
+  }
+
   // PUBLIC API
 
   return {
@@ -233,5 +274,6 @@ const UI = (function () {
     renderTransactions,
     updateStats,
     updateBudgetStatus,
+    renderChart,
   };
 })();
