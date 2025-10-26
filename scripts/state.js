@@ -6,6 +6,8 @@ const State = (function () {
   let transactions = [];
   let settings = { budgetCap: null, currencyRates: { EUR: 0.85, GBP: 0.73 } };
   let editingId = null;
+  let sortBy = "date";
+  let sortOrder = "asc";
 
   // TRANSACTION MANAGEMENT
 
@@ -98,11 +100,28 @@ const State = (function () {
   function initialize() {
     transactions = Storage.loadTransactions();
     settings = Storage.loadSettings();
-    console.log(`Loaded ${transactions.length} transactions from storage`);
+    // console.log(`Loaded ${transactions.length} transactions from storage`);
+  }
+
+  function getSortBy() {
+    return sortBy;
+  }
+
+  function setSortBy(field) {
+    sortBy = field;
+  }
+
+  function getSortOrder() {
+    return sortOrder;
+  }
+
+  function toggleSortOrder() {
+    sortOrder = sortOrder === "asc" ? "desc" : "asc";
+    return sortOrder;
   }
 
   // PUBLIC API
-  
+
   return {
     initialize,
     addTransaction,
@@ -116,5 +135,9 @@ const State = (function () {
     clearEditingId,
     getSettings,
     updateSettings,
+    getSortBy,
+    setSortBy,
+    getSortOrder,
+    toggleSortOrder,
   };
 })();
