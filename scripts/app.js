@@ -10,7 +10,7 @@
     loadSettingsUI(); // Add this line
     renderAll();
     attachEventListeners();
-    console.log("Finance Tracker initialized!");
+    // console.log("Finance Tracker initialized!");
   }
 
   function loadSettingsUI() {
@@ -31,7 +31,8 @@
 
   function renderAll() {
     const transactions = State.getAllTransactions();
-    UI.renderTransactions(transactions);
+    const sorted = sortTransactions(transactions);
+    UI.renderTransactions(sorted);
     updateDashboard();
   }
 
@@ -142,6 +143,17 @@
     if (loadSampleBtn) {
       loadSampleBtn.addEventListener("click", handleLoadSample);
     }
+
+    // Sort controls
+    const sortSelect = document.getElementById("sort-by");
+    if (sortSelect) {
+      sortSelect.addEventListener("change", handleSortChange);
+    }
+
+    const sortOrderBtn = document.getElementById("sort-order-btn");
+    if (sortOrderBtn) {
+      sortOrderBtn.addEventListener("click", handleSortOrderToggle);
+    }
   }
 
   // BUTTON HANDLERS
@@ -251,6 +263,59 @@
     }
   }
 
+  // SORTING
+
+  function handleSortChange() {
+    const sortSelect = document.getElementById("sort-by");
+    State.setSortBy(sortSelect.value);
+    renderAll();
+  }
+
+  function handleSortOrderToggle() {
+    const newOrder = State.toggleSortOrder();
+    const btn = document.getElementById("sort-order-btn");
+
+    if (newOrder === "asc") {
+      btn.textContent = "↑ Ascending";
+    } else {
+      btn.textContent = "↓ Descending";
+    }
+
+    renderAll();
+  }
+
+  function sortTransactions(transactions) {
+    const sortBy = State.getSortBy();
+    const sortOrder = State.getSortOrder();
+
+    const sorted = [...transactions].sort((a, b) => {
+      let compareA, compareB;
+
+      switch (sortBy) {
+        case "date":
+          compareA = new Date(a.date);
+          compareB = new Date(b.date);
+          break;
+        case "description":
+          compareA = a.description.toLowerCase();
+          compareB = b.description.toLowerCase();
+          break;
+        case "amount":
+          compareA = a.amount;
+          compareB = b.amount;
+          break;
+        default:
+          return 0;
+      }
+
+      if (compareA < compareB) return sortOrder === "asc" ? -1 : 1;
+      if (compareA > compareB) return sortOrder === "asc" ? 1 : -1;
+      return 0;
+    });
+
+    return sorted;
+  }
+
   // DASHBOARD STATS
 
   function updateDashboard() {
@@ -302,7 +367,10 @@
   function getLast7DaysTotal(transactions) {
     const today = new Date();
     const sevenDaysAgo = new Date(today);
-    sevenDaysAgo.setDate(today.getDate() - 7);
+
+    // The calculation subtracts 6 days to define the 7-day window.
+    sevenDaysAgo.setDate(today.getDate() - 6);
+    sevenDaysAgo.setHours(0, 0, 0, 0); // Normalizing the time for reliable comparison
 
     return transactions
       .filter((t) => new Date(t.date) >= sevenDaysAgo)
@@ -312,30 +380,34 @@
   function generateChartData(transactions) {
     const today = new Date();
     const chartData = [];
-    
+
     // Generate last 7 days
     for (let i = 6; i >= 0; i--) {
       const date = new Date(today);
       date.setDate(today.getDate() - i);
       date.setHours(0, 0, 0, 0);
-      
-      const dateStr = date.toISOString().split('T')[0];
-      
+
+      // Manually construct the local date string to avoid timezone issues
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Add 1 because getMonth is 0-indexed
+      const day = date.getDate().toString().padStart(2, "0");
+      const dateStr = `${year}-${month}-${day}`;
+
       // Sum transactions for this day
       const dayTotal = transactions
-        .filter(t => t.date === dateStr)
+        .filter((t) => t.date === dateStr)
         .reduce((sum, t) => sum + t.amount, 0);
-      
+
       // Format label (e.g., "Mon", "Tue")
-      const dayLabel = date.toLocaleDateString('en-US', { weekday: 'short' });
-      
+      const dayLabel = date.toLocaleDateString("en-US", { weekday: "short" });
+
       chartData.push({
         date: dateStr,
         label: dayLabel,
-        amount: dayTotal
+        amount: dayTotal,
       });
     }
-    
+
     return chartData;
   }
 
@@ -434,90 +506,90 @@
         description: "Lunch at cafeteria",
         amount: 12.5,
         category: "Food",
-        date: "2024-10-15",
-        createdAt: new Date("2024-10-15T12:00:00Z").toISOString(),
-        updatedAt: new Date("2024-10-15T12:00:00Z").toISOString(),
+        date: "2025-10-25",
+        createdAt: new Date("2025-10-25T12:00:00Z").toISOString(),
+        updatedAt: new Date("2025-10-25T12:00:00Z").toISOString(),
       },
       {
         id: "txn_002",
         description: "Chemistry textbook",
         amount: 89.99,
         category: "Books",
-        date: "2024-10-14",
-        createdAt: new Date("2024-10-14T10:00:00Z").toISOString(),
-        updatedAt: new Date("2024-10-14T10:00:00Z").toISOString(),
+        date: "2025-10-24",
+        createdAt: new Date("2025-10-24T10:00:00Z").toISOString(),
+        updatedAt: new Date("2025-10-24T10:00:00Z").toISOString(),
       },
       {
         id: "txn_003",
         description: "Monthly bus pass",
         amount: 45.0,
         category: "Transport",
-        date: "2024-10-13",
-        createdAt: new Date("2024-10-13T09:00:00Z").toISOString(),
-        updatedAt: new Date("2024-10-13T09:00:00Z").toISOString(),
+        date: "2025-10-23",
+        createdAt: new Date("2025-10-23T09:00:00Z").toISOString(),
+        updatedAt: new Date("2025-10-23T09:00:00Z").toISOString(),
       },
       {
         id: "txn_004",
         description: "Coffee with friends",
         amount: 8.75,
         category: "Entertainment",
-        date: "2024-10-20",
-        createdAt: new Date("2024-10-20T15:00:00Z").toISOString(),
-        updatedAt: new Date("2024-10-20T15:00:00Z").toISOString(),
+        date: "2025-10-20",
+        createdAt: new Date("2025-10-20T15:00:00Z").toISOString(),
+        updatedAt: new Date("2025-10-20T15:00:00Z").toISOString(),
       },
       {
         id: "txn_005",
         description: "Gym membership",
         amount: 35.0,
         category: "Other",
-        date: "2024-10-18",
-        createdAt: new Date("2024-10-18T08:00:00Z").toISOString(),
-        updatedAt: new Date("2024-10-18T08:00:00Z").toISOString(),
+        date: "2025-10-19",
+        createdAt: new Date("2025-10-19T08:00:00Z").toISOString(),
+        updatedAt: new Date("2025-10-19T08:00:00Z").toISOString(),
       },
       {
         id: "txn_006",
         description: "Groceries for week",
         amount: 67.43,
         category: "Food",
-        date: "2024-10-17",
-        createdAt: new Date("2024-10-17T18:00:00Z").toISOString(),
-        updatedAt: new Date("2024-10-17T18:00:00Z").toISOString(),
+        date: "2025-10-22",
+        createdAt: new Date("2025-10-22T18:00:00Z").toISOString(),
+        updatedAt: new Date("2025-10-22T18:00:00Z").toISOString(),
       },
       {
         id: "txn_007",
         description: "Notebook and pens",
         amount: 15.99,
         category: "Books",
-        date: "2024-10-16",
-        createdAt: new Date("2024-10-16T11:00:00Z").toISOString(),
-        updatedAt: new Date("2024-10-16T11:00:00Z").toISOString(),
+        date: "2025-10-18",
+        createdAt: new Date("2025-10-18T11:00:00Z").toISOString(),
+        updatedAt: new Date("2025-10-18T11:00:00Z").toISOString(),
       },
       {
         id: "txn_008",
         description: "Uber to campus",
         amount: 12.3,
         category: "Transport",
-        date: "2024-10-21",
-        createdAt: new Date("2024-10-21T07:00:00Z").toISOString(),
-        updatedAt: new Date("2024-10-21T07:00:00Z").toISOString(),
+        date: "2025-10-21",
+        createdAt: new Date("2025-10-21T07:00:00Z").toISOString(),
+        updatedAt: new Date("2025-10-21T07:00:00Z").toISOString(),
       },
       {
         id: "txn_009",
         description: "Movie tickets",
         amount: 24.0,
         category: "Entertainment",
-        date: "2024-10-19",
-        createdAt: new Date("2024-10-19T20:00:00Z").toISOString(),
-        updatedAt: new Date("2024-10-19T20:00:00Z").toISOString(),
+        date: "2025-10-19",
+        createdAt: new Date("2025-10-19T20:00:00Z").toISOString(),
+        updatedAt: new Date("2025-10-19T20:00:00Z").toISOString(),
       },
       {
         id: "txn_010",
         description: "Lab fees",
         amount: 50.0,
         category: "Fees",
-        date: "2024-10-12",
-        createdAt: new Date("2024-10-12T10:00:00Z").toISOString(),
-        updatedAt: new Date("2024-10-12T10:00:00Z").toISOString(),
+        date: "2025-10-12",
+        createdAt: new Date("2025-10-12T10:00:00Z").toISOString(),
+        updatedAt: new Date("2025-10-12T10:00:00Z").toISOString(),
       },
     ];
 
