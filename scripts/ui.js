@@ -150,9 +150,16 @@ const UI = (function () {
     const row = document.createElement("tr");
     row.dataset.id = transaction.id;
 
+    // Get current search regex for highlighting
+    const regex = Search.getCurrentRegex();
+    const highlightedDesc =
+      regex && !regex.error
+        ? Search.highlightText(transaction.description, regex)
+        : escapeHtml(transaction.description);
+
     row.innerHTML = `
             <td>${transaction.date}</td>
-            <td>${escapeHtml(transaction.description)}</td>
+            <td>${highlightedDesc}</td>
             <td>${transaction.category}</td>
             <td>$${transaction.amount.toFixed(2)}</td>
             <td class="actions">
