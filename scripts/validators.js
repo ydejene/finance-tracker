@@ -52,8 +52,13 @@ const Validators = (function () {
       return "Invalid date";
     }
     const today = new Date();
+
+    //  // Normalize both dates to midnight local time for a consistent comparison
+    dateObj.setHours(0, 0, 0, 0);
     today.setHours(0, 0, 0, 0);
-    if (dateObj > today) {
+
+    // explicitly comparing the timestamps using the getTime() method for clarity
+    if (dateObj.getTime() > today.getTime()) {
       return "Cannot be in the future";
     }
     return null;
