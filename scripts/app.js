@@ -389,7 +389,7 @@
 
       // Manually construct the local date string to avoid timezone issues
       const year = date.getFullYear();
-      const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Add 1 because getMonth is 0-indexed
+      const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Adding 1 because in javascript getMonth is 0-indexed (0 being January and 11 being December)
       const day = date.getDate().toString().padStart(2, "0");
       const dateStr = `${year}-${month}-${day}`;
 
