@@ -74,24 +74,24 @@ body {
   left: var(--spacing-sm);
 }
 
-/* logo image  */
-#logo-image{
-  width: 15%;
-}
 /* HEADER & NAVIGATION */
 
 header {
   background: var(--surface-color);
   border-bottom: 2px solid var(--border-color);
-  padding: var(--spacing-lg) var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-md);
   box-shadow: var(--shadow-sm);
-  height: 15vh;
 }
 
 header h1 {
   font-size: 1.75rem;
   margin-bottom: var(--spacing-md);
   color: var(--primary-color);
+}
+
+/* logo image  */
+#logo-link img{
+  width: 60%;
 }
 
 nav ul {
@@ -617,6 +617,91 @@ body.modal-open {
   padding: var(--spacing-2xl);
   color: var(--text-muted);
   font-size: 1.125rem;
+}
+
+/* ==========================================
+   MOBILE CARD VIEW (instead of table)
+   ========================================== */
+
+.transactions-cards {
+    display: none; /* Hidden by default, shown on mobile */
+}
+
+.transaction-card {
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.transaction-card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: var(--spacing-sm);
+}
+
+.card-description {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.card-amount {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.card-details {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.card-detail-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.card-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.card-actions button {
+    flex: 1;
+}
+
+/* Mobile: Hide table, show cards */
+@media (max-width: 767px) {
+    .transactions-table {
+        display: none;
+    }
+    
+    .transactions-cards {
+        display: block;
+    }
+}
+
+/* Tablet and up: Show table, hide cards */
+@media (min-width: 768px) {
+    .transactions-table {
+        display: table;
+    }
+    
+    .transactions-cards {
+        display: none;
+    }
 }
 
 /* ==========================================
