@@ -118,7 +118,19 @@ const UI = (function () {
       return;
     }
 
-    // Create table
+    // Create container with both table and cards
+    elements.transactionsContainer.innerHTML = "";
+
+    // Render table (for desktop/tablet)
+    const table = createTable(transactions);
+    elements.transactionsContainer.appendChild(table);
+
+    // Render cards (for mobile)
+    const cardsContainer = createCards(transactions);
+    elements.transactionsContainer.appendChild(cardsContainer);
+  }
+
+  function createTable(transactions) {
     const table = document.createElement("table");
     table.className = "transactions-table";
     table.innerHTML = `
@@ -142,9 +154,61 @@ const UI = (function () {
       tbody.appendChild(row);
     });
 
-    elements.transactionsContainer.innerHTML = "";
-    elements.transactionsContainer.appendChild(table);
+    return table;
   }
+
+  function createCards(transactions) {
+    const container = document.createElement("div");
+    container.className = "transactions-cards";
+
+    transactions.forEach((transaction) => {
+      const card = createTransactionCard(transaction);
+      container.appendChild(card);
+    });
+
+    return container;
+  }
+
+ function createTransactionCard(transaction) {
+        const card = document.createElement('div');
+        card.className = 'transaction-card';
+        card.dataset.id = transaction.id;
+        
+        // Get highlighted description
+        const regex = Search.getCurrentRegex();
+        const highlightedDesc = regex && !regex.error ? 
+            Search.highlightText(transaction.description, regex) : 
+            escapeHtml(transaction.description);
+        
+        // Highlight amount
+        const amountStr = transaction.amount.toFixed(2);
+        const highlightedAmount = regex && !regex.error ?
+            Search.highlightText(amountStr, regex) :
+            amountStr;
+        
+        card.innerHTML = `
+            <div class="card-header">
+                <div class="card-description">${highlightedDesc}</div>
+                <div class="card-amount">$${highlightedAmount}</div>
+            </div>
+            <div class="card-details">
+                <div class="card-detail-item">
+                    <span></span>
+                    <span>${transaction.date}</span>
+                </div>
+                <div class="card-detail-item">
+                    <span></span>
+                    <span>${transaction.category}</span>
+                </div>
+            </div>
+            <div class="card-actions">
+                <button class="edit-btn secondary-btn" data-id="${transaction.id}"> Edit</button>
+                <button class="delete-btn secondary-btn" data-id="${transaction.id}"> Delete</button>
+            </div>
+        `;
+        
+        return card;
+    }
 
   function createTransactionRow(transaction) {
     const row = document.createElement("tr");
@@ -152,23 +216,28 @@ const UI = (function () {
 
     // Get current search regex for highlighting
     const regex = Search.getCurrentRegex();
+
+    // Highlight description
     const highlightedDesc =
       regex && !regex.error
         ? Search.highlightText(transaction.description, regex)
         : escapeHtml(transaction.description);
 
+    // Highlight amount (convert to string first)
+    const amountStr = transaction.amount.toFixed(2);
+    const highlightedAmount =
+      regex && !regex.error
+        ? Search.highlightText(amountStr, regex)
+        : amountStr;
+
     row.innerHTML = `
             <td>${transaction.date}</td>
             <td>${highlightedDesc}</td>
             <td>${transaction.category}</td>
-            <td>$${transaction.amount.toFixed(2)}</td>
+            <td>$${highlightedAmount}</td>
             <td class="actions">
-                <button class="edit-btn" data-id="${
-                  transaction.id
-                }"> Edit</button>
-                <button class="delete-btn" data-id="${
-                  transaction.id
-                }"> Delete</button>
+                <button class="edit-btn" data-id="${transaction.id}">Edit</button>
+                <button class="delete-btn" data-id="${transaction.id}">Delete</button>
             </td>
         `;
 
