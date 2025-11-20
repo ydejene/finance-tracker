@@ -4,107 +4,107 @@
     "description": "Lunch at cafeteria",
     "amount": 12.5,
     "category": "Food",
-    "date": "2024-11-15",
-    "createdAt": "2024-11-15T12:00:00.000Z",
-    "updatedAt": "2024-11-15T12:00:00.000Z"
+    "date": "2025-11-15",
+    "createdAt": "2025-11-15T12:00:00.000Z",
+    "updatedAt": "2025-11-15T12:00:00.000Z"
   },
   {
     "id": "txn_002",
     "description": "Chemistry textbook",
     "amount": 89.99,
     "category": "Books",
-    "date": "2024-11-14",
-    "createdAt": "2024-11-14T10:00:00.000Z",
-    "updatedAt": "2024-11-14T10:00:00.000Z"
+    "date": "2025-11-14",
+    "createdAt": "2025-11-14T10:00:00.000Z",
+    "updatedAt": "2025-11-14T10:00:00.000Z"
   },
   {
     "id": "txn_003",
     "description": "Monthly bus pass",
     "amount": 45.0,
     "category": "Transport",
-    "date": "2024-11-13",
-    "createdAt": "2024-11-13T09:00:00.000Z",
-    "updatedAt": "2024-11-13T09:00:00.000Z"
+    "date": "2025-11-13",
+    "createdAt": "2025-11-13T09:00:00.000Z",
+    "updatedAt": "2025-11-13T09:00:00.000Z"
   },
   {
     "id": "txn_004",
     "description": "Coffee with friends",
     "amount": 8.75,
     "category": "Entertainment",
-    "date": "2024-11-20",
-    "createdAt": "2024-11-20T15:00:00.000Z",
-    "updatedAt": "2024-11-20T15:00:00.000Z"
+    "date": "2025-11-20",
+    "createdAt": "2025-11-20T15:00:00.000Z",
+    "updatedAt": "2025-11-20T15:00:00.000Z"
   },
   {
     "id": "txn_005",
     "description": "Gym membership fee",
     "amount": 35.0,
     "category": "Other",
-    "date": "2024-11-18",
-    "createdAt": "2024-11-18T08:00:00.000Z",
-    "updatedAt": "2024-11-18T08:00:00.000Z"
+    "date": "2025-11-18",
+    "createdAt": "2025-11-18T08:00:00.000Z",
+    "updatedAt": "2025-11-18T08:00:00.000Z"
   },
   {
     "id": "txn_006",
     "description": "Groceries for week",
     "amount": 67.43,
     "category": "Food",
-    "date": "2024-11-17",
-    "createdAt": "2024-11-17T18:00:00.000Z",
-    "updatedAt": "2024-11-17T18:00:00.000Z"
+    "date": "2025-11-17",
+    "createdAt": "2025-11-17T18:00:00.000Z",
+    "updatedAt": "2025-11-17T18:00:00.000Z"
   },
   {
     "id": "txn_007",
     "description": "Notebook and pens",
     "amount": 15.99,
     "category": "Books",
-    "date": "2024-11-16",
-    "createdAt": "2024-11-16T11:00:00.000Z",
-    "updatedAt": "2024-11-16T11:00:00.000Z"
+    "date": "2025-11-16",
+    "createdAt": "2025-11-16T11:00:00.000Z",
+    "updatedAt": "2025-11-16T11:00:00.000Z"
   },
   {
     "id": "txn_008",
     "description": "Uber to campus",
     "amount": 12.3,
     "category": "Transport",
-    "date": "2024-11-21",
-    "createdAt": "2024-11-21T07:00:00.000Z",
-    "updatedAt": "2024-11-21T07:00:00.000Z"
+    "date": "2025-11-21",
+    "createdAt": "2025-11-21T07:00:00.000Z",
+    "updatedAt": "2025-11-21T07:00:00.000Z"
   },
   {
     "id": "txn_009",
     "description": "Movie tickets",
     "amount": 24.0,
     "category": "Entertainment",
-    "date": "2024-11-19",
-    "createdAt": "2024-11-19T20:00:00.000Z",
-    "updatedAt": "2024-11-19T20:00:00.000Z"
+    "date": "2025-11-19",
+    "createdAt": "2025-11-19T20:00:00.000Z",
+    "updatedAt": "2025-11-19T20:00:00.000Z"
   },
   {
     "id": "txn_010",
     "description": "Lab fees payment",
     "amount": 50.0,
     "category": "Fees",
-    "date": "2024-11-12",
-    "createdAt": "2024-11-12T10:00:00.000Z",
-    "updatedAt": "2024-11-12T10:00:00.000Z"
+    "date": "2025-11-12",
+    "createdAt": "2025-11-12T10:00:00.000Z",
+    "updatedAt": "2025-11-12T10:00:00.000Z"
   },
   {
     "id": "txn_011",
     "description": "Coffee coffee",
     "amount": 5.5,
     "category": "Food",
-    "date": "2024-11-10",
-    "createdAt": "2024-11-10T14:00:00.000Z",
-    "updatedAt": "2024-11-10T14:00:00.000Z"
+    "date": "2025-11-10",
+    "createdAt": "2025-11-10T14:00:00.000Z",
+    "updatedAt": "2025-11-10T14:00:00.000Z"
   },
   {
     "id": "txn_012",
     "description": "Student parking permit",
     "amount": 125.0,
     "category": "Fees",
-    "date": "2024-11-01",
-    "createdAt": "2024-11-01T08:00:00.000Z",
-    "updatedAt": "2024-11-01T08:00:00.000Z"
+    "date": "2025-11-01",
+    "createdAt": "2025-11-01T08:00:00.000Z",
+    "updatedAt": "2025-11-01T08:00:00.000Z"
   }
 ]
