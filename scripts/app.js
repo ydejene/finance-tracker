@@ -7,10 +7,11 @@
 
   function init() {
     State.initialize();
-    loadSettingsUI(); // Add this line
+    initializeIcons();
+    loadSettingsUI();
     renderAll();
     attachEventListeners();
-    // console.log("Finance Tracker initialized!");
+    console.log("Finance Tracker initialized!");
   }
 
   function loadSettingsUI() {
@@ -27,10 +28,24 @@
     const gbpRateInput = document.getElementById("gbp-rate");
     if (eurRateInput) eurRateInput.value = settings.currencyRates.EUR;
     if (gbpRateInput) gbpRateInput.value = settings.currencyRates.GBP;
+
+    // Load selected currency
+    const currencySelect = document.getElementById("currency-select");
+    if (currencySelect && settings.currentCurrency) {
+      currencySelect.value = settings.currentCurrency;
+    }
   }
 
   function renderAll() {
-    const transactions = State.getAllTransactions();
+    let transactions = State.getAllTransactions();
+
+    // Apply search filter
+    const regex = Search.getCurrentRegex();
+    if (regex && !regex.error) {
+      transactions = Search.searchTransactions(transactions, regex);
+    }
+
+    // Apply sorting
     const sorted = sortTransactions(transactions);
     UI.renderTransactions(sorted);
     updateDashboard();
@@ -124,9 +139,14 @@
       saveRatesBtn.addEventListener("click", handleSaveCurrencyRates);
     }
 
-    const importBtn = document.getElementById("import-btn");
+    const importBtn = document.getElementById('import-btn');
     if (importBtn) {
-      importBtn.addEventListener("click", handleImport);
+      importBtn.addEventListener('click', function() {
+        const fileInput = document.getElementById('import-file');
+        if (fileInput) {
+          fileInput.click(); // Trigger file picker
+        }
+      });
     }
 
     const importFile = document.getElementById("import-file");
@@ -144,6 +164,12 @@
       loadSampleBtn.addEventListener("click", handleLoadSample);
     }
 
+    // Currency selector
+    const currencySelect = document.getElementById("currency-select");
+    if (currencySelect) {
+      currencySelect.addEventListener("change", handleCurrencyChange);
+    }
+
     // Sort controls
     const sortSelect = document.getElementById("sort-by");
     if (sortSelect) {
@@ -153,6 +179,17 @@
     const sortOrderBtn = document.getElementById("sort-order-btn");
     if (sortOrderBtn) {
       sortOrderBtn.addEventListener("click", handleSortOrderToggle);
+    }
+
+    // Search
+    const searchInput = document.getElementById("search-input");
+    if (searchInput) {
+      searchInput.addEventListener("input", handleSearch);
+    }
+
+    const caseSensitiveCheckbox = document.getElementById("case-sensitive");
+    if (caseSensitiveCheckbox) {
+      caseSensitiveCheckbox.addEventListener("change", handleSearch);
     }
   }
 
@@ -368,7 +405,7 @@
     const today = new Date();
     const sevenDaysAgo = new Date(today);
 
-    // The calculation subtracts 6 days to define the 7-day window.
+    // The calculation subtracts 6 days to define the 7-day window which includes "today"
     sevenDaysAgo.setDate(today.getDate() - 6);
     sevenDaysAgo.setHours(0, 0, 0, 0); // Normalizing the time for reliable comparison
 
@@ -446,9 +483,59 @@
     alert("Currency rates updated successfully");
   }
 
-  function handleImport() {
-    const fileInput = document.getElementById("import-file");
-    fileInput.click(); // Trigger file picker
+  function handleImportFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      try {
+        const data = JSON.parse(e.target.result);
+        const validation = Storage.validateImportedData(data);
+
+        if (!validation.valid) {
+          alert(`Import failed: ${validation.error}`);
+          return;
+        }
+
+        // Check for warnings (future dates)
+        if (validation.warnings && validation.warnings.length > 0) {
+          const warningMsg =
+            validation.message +
+            "\n\nTransactions with future dates:\n" +
+            validation.warnings.slice(0, 5).join("\n") +
+            (validation.warnings.length > 5
+              ? `\n... and ${validation.warnings.length - 5} more`
+              : "");
+
+          const proceed = confirm(
+            warningMsg + "\n\nDo you want to proceed with import?"
+          );
+          if (!proceed) {
+            // Reset file input
+            event.target.value = "";
+            return;
+          }
+        }
+
+        State.setTransactions(data);
+        renderAll();
+
+        // Success message with warning if applicable
+        let successMsg = `Successfully imported ${data.length} transactions!`;
+        if (validation.warnings) {
+          successMsg += `\n\nNote: ${validation.warnings.length} transaction(s) have future dates.`;
+        }
+        alert(successMsg);
+
+        // Reset file input
+        event.target.value = "";
+      } catch (error) {
+        alert("Invalid JSON file. Please check the format.");
+        console.error("Import error:", error);
+      }
+    };
+    reader.readAsText(file);
   }
 
   function handleImportFile(event) {
@@ -494,110 +581,174 @@
     alert(`Exported ${transactions.length} transactions`);
   }
 
+  // Currency Change
+  function handleCurrencyChange() {
+    const currencySelect = document.getElementById("currency-select");
+    const selectedCurrency = currencySelect.value;
+    State.setCurrentCurrency(selectedCurrency);
+    renderAll();
+  }
+
+  // SEARCH
+
+  function handleSearch() {
+    const searchInput = document.getElementById("search-input");
+    const caseSensitiveCheckbox = document.getElementById("case-sensitive");
+    const searchError = document.getElementById("search-error");
+
+    const pattern = searchInput.value;
+    const isCaseSensitive = caseSensitiveCheckbox.checked;
+
+    // Clear previous error
+    searchError.textContent = "";
+    searchInput.style.borderColor = "";
+
+    // Compile regex
+    const regex = Search.compileRegex(pattern, isCaseSensitive);
+
+    // Check for errors
+    if (regex && regex.error) {
+      searchError.textContent = `Invalid regex: ${regex.error}`;
+      searchInput.style.borderColor = "var(--danger-color)";
+      Search.setCurrentRegex(null);
+      renderAll();
+      return;
+    }
+
+    // Save regex and case sensitivity
+    Search.setCurrentRegex(regex);
+    Search.setCaseSensitive(isCaseSensitive);
+
+    // Filter and render
+    renderAll();
+  }
+
   function handleLoadSample() {
     const confirmed = confirm(
-      "Load sample data? This will replace your current transactions."
+      "Load sample data from seed.json? This will replace your current transactions."
     );
     if (!confirmed) return;
 
-    const sampleData = [
-      {
-        id: "txn_001",
-        description: "Lunch at cafeteria",
-        amount: 12.5,
-        category: "Food",
-        date: "2025-10-25",
-        createdAt: new Date("2025-10-25T12:00:00Z").toISOString(),
-        updatedAt: new Date("2025-10-25T12:00:00Z").toISOString(),
-      },
-      {
-        id: "txn_002",
-        description: "Chemistry textbook",
-        amount: 89.99,
-        category: "Books",
-        date: "2025-10-24",
-        createdAt: new Date("2025-10-24T10:00:00Z").toISOString(),
-        updatedAt: new Date("2025-10-24T10:00:00Z").toISOString(),
-      },
-      {
-        id: "txn_003",
-        description: "Monthly bus pass",
-        amount: 45.0,
-        category: "Transport",
-        date: "2025-10-23",
-        createdAt: new Date("2025-10-23T09:00:00Z").toISOString(),
-        updatedAt: new Date("2025-10-23T09:00:00Z").toISOString(),
-      },
-      {
-        id: "txn_004",
-        description: "Coffee with friends",
-        amount: 8.75,
-        category: "Entertainment",
-        date: "2025-10-20",
-        createdAt: new Date("2025-10-20T15:00:00Z").toISOString(),
-        updatedAt: new Date("2025-10-20T15:00:00Z").toISOString(),
-      },
-      {
-        id: "txn_005",
-        description: "Gym membership",
-        amount: 35.0,
-        category: "Other",
-        date: "2025-10-19",
-        createdAt: new Date("2025-10-19T08:00:00Z").toISOString(),
-        updatedAt: new Date("2025-10-19T08:00:00Z").toISOString(),
-      },
-      {
-        id: "txn_006",
-        description: "Groceries for week",
-        amount: 67.43,
-        category: "Food",
-        date: "2025-10-22",
-        createdAt: new Date("2025-10-22T18:00:00Z").toISOString(),
-        updatedAt: new Date("2025-10-22T18:00:00Z").toISOString(),
-      },
-      {
-        id: "txn_007",
-        description: "Notebook and pens",
-        amount: 15.99,
-        category: "Books",
-        date: "2025-10-18",
-        createdAt: new Date("2025-10-18T11:00:00Z").toISOString(),
-        updatedAt: new Date("2025-10-18T11:00:00Z").toISOString(),
-      },
-      {
-        id: "txn_008",
-        description: "Uber to campus",
-        amount: 12.3,
-        category: "Transport",
-        date: "2025-10-21",
-        createdAt: new Date("2025-10-21T07:00:00Z").toISOString(),
-        updatedAt: new Date("2025-10-21T07:00:00Z").toISOString(),
-      },
-      {
-        id: "txn_009",
-        description: "Movie tickets",
-        amount: 24.0,
-        category: "Entertainment",
-        date: "2025-10-19",
-        createdAt: new Date("2025-10-19T20:00:00Z").toISOString(),
-        updatedAt: new Date("2025-10-19T20:00:00Z").toISOString(),
-      },
-      {
-        id: "txn_010",
-        description: "Lab fees",
-        amount: 50.0,
-        category: "Fees",
-        date: "2025-10-12",
-        createdAt: new Date("2025-10-12T10:00:00Z").toISOString(),
-        updatedAt: new Date("2025-10-12T10:00:00Z").toISOString(),
-      },
-    ];
+    // Fetch seed.json file
+    fetch("seed.json")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Could not load seed.json");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        const validation = Storage.validateImportedData(data);
 
-    State.setTransactions(sampleData);
-    renderAll();
-    alert("Sample data loaded successfully!");
+        if (!validation.valid) {
+          alert(`Invalid seed data: ${validation.error}`);
+          return;
+        }
+
+        // Check for future date warnings
+        if (validation.warnings && validation.warnings.length > 0) {
+          const warningMsg =
+            validation.message +
+            "\n\nTransactions with future dates:\n" +
+            validation.warnings.slice(0, 5).join("\n") +
+            (validation.warnings.length > 5
+              ? `\n... and ${validation.warnings.length - 5} more`
+              : "");
+
+          const proceed = confirm(warningMsg + "\n\nDo you want to proceed?");
+          if (!proceed) return;
+        }
+
+        State.setTransactions(data);
+        renderAll();
+
+        let successMsg = `Successfully loaded ${data.length} transactions from seed.json!`;
+        if (validation.warnings) {
+          successMsg += `\n\nNote: ${validation.warnings.length} transaction(s) have future dates.`;
+        }
+        alert(successMsg);
+      })
+      .catch((error) => {
+        alert(`Error loading seed.json: ${error.message}`);
+        console.error("Seed data error:", error);
+      });
   }
 
+  // ==========================================
+  // INITIALIZE ICONS
+  // ==========================================
+
+  function initializeIcons() {
+    // Get the icon helper from UI module
+    const getIcon = function (name) {
+      const icons = {
+        wallet:
+          '<svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>',
+        chart:
+          '<svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>',
+        document:
+          '<svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>',
+        settings:
+          '<svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>',
+        info: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>',
+        edit: '<svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>',
+        delete:
+          '<svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a22 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>',
+        import:
+          '<svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>',
+        export:
+          '<svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>',
+        sample:
+          '<svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>',
+        calendar:
+          '<svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>',
+        tag: '<svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /></svg>',
+        count:
+          '<svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>',
+        dollar:
+          '<svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>',
+        target:
+          '<svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>',
+      };
+      return icons[name] || "";
+    };
+
+    // Header/Nav icons
+    const logoIcon = document.getElementById("logo-icon");
+    if (logoIcon) logoIcon.innerHTML = getIcon("wallet");
+
+    const navChartIcon = document.getElementById("nav-chart-icon");
+    if (navChartIcon) navChartIcon.innerHTML = getIcon("chart");
+
+    const navDocIcon = document.getElementById("nav-doc-icon");
+    if (navDocIcon) navDocIcon.innerHTML = getIcon("document");
+
+    const navSettingsIcon = document.getElementById("nav-settings-icon");
+    if (navSettingsIcon) navSettingsIcon.innerHTML = getIcon("settings");
+
+    const navInfoIcon = document.getElementById("nav-info-icon");
+    if (navInfoIcon) navInfoIcon.innerHTML = getIcon("info");
+
+    // Section heading icons
+    const dashIcon = document.getElementById("dash-icon");
+    if (dashIcon) dashIcon.innerHTML = getIcon("chart");
+
+    const transIcon = document.getElementById("trans-icon");
+    if (transIcon) transIcon.innerHTML = getIcon("document");
+
+    const settingsIcon = document.getElementById("settings-icon");
+    if (settingsIcon) settingsIcon.innerHTML = getIcon("settings");
+
+    // Button icons
+    const importIcon = document.getElementById("import-icon");
+    if (importIcon) importIcon.innerHTML = getIcon("import");
+
+    const exportIcon = document.getElementById("export-icon");
+    if (exportIcon) exportIcon.innerHTML = getIcon("export");
+
+    const sampleIcon = document.getElementById("sample-icon");
+    if (sampleIcon) sampleIcon.innerHTML = getIcon("sample");
+  }
   // START APPLICATION
 
   document.addEventListener("DOMContentLoaded", init);
