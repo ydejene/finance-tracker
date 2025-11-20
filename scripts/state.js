@@ -95,6 +95,38 @@ const State = (function () {
     Storage.saveSettings(settings);
   }
 
+  // Currency MANAGEMENT
+  function getCurrentCurrency() {
+    return settings.currentCurrency || "USD";
+  }
+
+  function setCurrentCurrency(currency) {
+    settings.currentCurrency = currency;
+    Storage.saveSettings(settings);
+  }
+
+  function convertAmount(amount, toCurrency) {
+    if (toCurrency === "USD") {
+      return amount; // Base currency
+    }
+
+    const rate = settings.currencyRates[toCurrency];
+    if (!rate) {
+      return amount;
+    }
+
+    return amount * rate;
+  }
+
+  function getCurrencySymbol(currency) {
+    const symbols = {
+      USD: "$",
+      EUR: "€",
+      GBP: "£",
+    };
+    return symbols[currency] || "$";
+  }
+
   // INITIALIZATION
 
   function initialize() {
@@ -139,5 +171,9 @@ const State = (function () {
     setSortBy,
     getSortOrder,
     toggleSortOrder,
+    getCurrentCurrency,
+    setCurrentCurrency,
+    convertAmount,
+    getCurrencySymbol,
   };
 })();
