@@ -1,3 +1,15 @@
+<!--
+  Student Finance Tracker
+  
+  A responsive web application for tracking student expenses
+  with regex-powered search and accessible design.
+  
+  Technologies: Vanilla HTML5, CSS3, JavaScript ES6+
+  No frameworks used (per assignment requirements)
+  
+  Icons: Heroicons (MIT License) - https://heroicons.com
+  Accessibility: WCAG 2.1 AA compliant
+-->
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -5,19 +17,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Student Finance Tracker</title>
     <link rel="stylesheet" href="./styles/main.css" />
+    <!-- Heroicons via CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/heroicons/2.0.18/outline.min.js"></script>
   </head>
   <body>
     <!-- user can use this to skip to the main content for accessibility -->
     <a href="#main-content" class="skip-link">Skip to the main content</a>
 
     <header>
-      <h1>logo Student finance Tracker</h1>
+      <a href="/" id="logo-link">
+        <img src="./assets/images/logo.png" alt="logo image" />
+      </a>
       <nav>
         <ul>
-          <li><a href="#dashboard">Dashboard</a></li>
-          <li><a href="#transactions">Transactions</a></li>
-          <li><a href="#settings">Settings</a></li>
-          <li><a href="#about">About</a></li>
+          <li>
+            <a href="#dashboard"><span id="nav-chart-icon"></span>Dashboard</a>
+          </li>
+          <li>
+            <a href="#transactions"
+              ><span id="nav-doc-icon"></span>Transactions</a
+            >
+          </li>
+          <li>
+            <a href="#settings"><span id="nav-settings-icon"></span>Settings</a>
+          </li>
+          <li>
+            <a href="#about"><span id="nav-info-icon"></span>About</a>
+          </li>
         </ul>
       </nav>
     </header>
@@ -39,7 +65,7 @@
 
       <!-- Dashboard/Stats Section -->
       <section id="dashboard">
-        <h2>Dashboard</h2>
+        <h2><span id="dash-icon"></span>Dashboard</h2>
         <div class="stats-container">
           <div class="stat-card">
             <h3>Total Transactions</h3>
@@ -61,16 +87,23 @@
           </div>
         </div>
 
+        <!-- Currency Toggle  -->
+        <div class="currency-toggle">
+          <label>View amounts in:</label>
+          <select id="currency-select">
+            <option value="USD">USD ($)</option>
+            <option value="EUR">EUR (€)</option>
+            <option value="GBP">GBP (£)</option>
+          </select>
+        </div>
+
         <!-- Last 7 Days Chart -->
         <div class="chart-container">
           <h3>Last 7 Days Spendings</h3>
           <div id="chart" class="bar-chart">
-            <!-- bars wiht Js -->
-            <div class="chart-placeholder">
-              <p>Total: <span id="last-7-days">$0.00</span></p>
-              <p class="helper-text">Chart visualization coming soon</p>
-            </div>
+            <!-- the bars will be genarated using Js -->
           </div>
+          <p class="chart-total">Total: <span id="last-7-days">$0.00</span></p>
         </div>
 
         <!-- ARIA Live Alert for Budget -->
@@ -84,7 +117,7 @@
 
       <!-- Transactions Section -->
       <section id="transactions">
-        <h2>Transactions</h2>
+        <h2><span id="trans-icon"></span>Transactions</h2>
 
         <!-- Primary Action -->
         <div class="action-bar">
@@ -95,7 +128,9 @@
 
         <!-- Data Management Toolbar -->
         <div class="data-toolbar">
-          <button id="import-btn" class="secondary-btn">📥 Import</button>
+          <button id="import-btn" class="secondary-btn">
+            <span id="import-icon"></span>Import
+          </button>
           <input
             type="file"
             id="import-file"
@@ -103,10 +138,12 @@
             style="display: none"
           />
 
-          <button id="export-btn" class="secondary-btn">Export</button>
+          <button id="export-btn" class="secondary-btn">
+            <span id="export-icon"></span>Export
+          </button>
 
           <button id="load-sample-btn" class="secondary-btn">
-            Sample Data
+            <span id="sample-icon"></span> Sample Data
           </button>
         </div>
 
@@ -254,7 +291,7 @@
 
       <!-- Settings Section -->
       <section id="settings">
-        <h2>Settings</h2>
+        <h2><span id="settings-icon"></span>Settings</h2>
 
         <!-- Budget Cap Setting -->
         <div class="setting-group">
@@ -293,6 +330,7 @@
     <script src="scripts/validators.js"></script>
     <script src="scripts/storage.js"></script>
     <script src="scripts/state.js"></script>
+    <script src="scripts/search.js"></script>
     <script src="scripts/ui.js"></script>
     <script src="scripts/app.js"></script>
   </body>

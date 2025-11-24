@@ -25,6 +25,42 @@ const UI = (function () {
     dateError: document.getElementById("date-error"),
   };
 
+  // ==========================================
+  // ICON HELPERS
+  // ==========================================
+
+  function getIcon(name) {
+    const icons = {
+      wallet:
+        '<svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>',
+      chart:
+        '<svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>',
+      document:
+        '<svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>',
+      settings:
+        '<svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>',
+      info: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>',
+      edit: '<svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>',
+      delete:
+        '<svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>',
+      import:
+        '<svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>',
+      export:
+        '<svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>',
+      sample:
+        '<svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>',
+      calendar:
+        '<svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>',
+      tag: '<svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /></svg>',
+      count:
+        '<svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>',
+      dollar:
+        '<svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>',
+      target:
+        '<svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>',
+    };
+    return icons[name] || "";
+  }
   // FORM MANAGEMENT
 
   function showForm(mode = "add", transaction = null) {
@@ -32,6 +68,10 @@ const UI = (function () {
 
     // Show modal
     modalBackdrop.style.display = "flex";
+
+    // Prevent body scroll
+    document.body.classList.add("modal-open");
+
     clearErrors();
 
     if (mode === "add") {
@@ -56,6 +96,10 @@ const UI = (function () {
   function hideForm() {
     const modalBackdrop = document.getElementById("modal-backdrop");
     modalBackdrop.style.display = "none";
+
+    // Re-enable body scroll
+    document.body.classList.remove("modal-open");
+
     elements.transactionForm.reset();
     clearErrors();
   }
@@ -110,7 +154,19 @@ const UI = (function () {
       return;
     }
 
-    // Create table
+    // Create container with both table and cards
+    elements.transactionsContainer.innerHTML = "";
+
+    // Render table (for desktop/tablet)
+    const table = createTable(transactions);
+    elements.transactionsContainer.appendChild(table);
+
+    // Render cards (for mobile)
+    const cardsContainer = createCards(transactions);
+    elements.transactionsContainer.appendChild(cardsContainer);
+  }
+
+  function createTable(transactions) {
     const table = document.createElement("table");
     table.className = "transactions-table";
     table.innerHTML = `
@@ -134,29 +190,126 @@ const UI = (function () {
       tbody.appendChild(row);
     });
 
-    elements.transactionsContainer.innerHTML = "";
-    elements.transactionsContainer.appendChild(table);
+    return table;
+  }
+
+  function createCards(transactions) {
+    const container = document.createElement("div");
+    container.className = "transactions-cards";
+
+    transactions.forEach((transaction) => {
+      const card = createTransactionCard(transaction);
+      container.appendChild(card);
+    });
+
+    return container;
+  }
+
+  function createTransactionCard(transaction) {
+    const card = document.createElement("div");
+    card.className = "transaction-card";
+    card.dataset.id = transaction.id;
+
+    // Get highlighted description
+    const regex = Search.getCurrentRegex();
+    const highlightedDesc =
+      regex && !regex.error
+        ? Search.highlightText(transaction.description, regex)
+        : escapeHtml(transaction.description);
+
+    // Convert amount to selected currency
+    const currency = State.getCurrentCurrency();
+    const convertedAmount = State.convertAmount(transaction.amount, currency);
+    const currencySymbol = State.getCurrencySymbol(currency);
+
+    const amountStr = transaction.amount.toFixed(2);
+    const highlightedAmount =
+      regex && !regex.error
+        ? Search.highlightText(amountStr, regex)
+        : amountStr;
+
+    const displayAmount = highlightedAmount.replace(
+      /[\d.]+/g,
+      convertedAmount.toFixed(2)
+    );
+
+    card.innerHTML = `
+            <div class="card-header">
+                <div class="card-description">${highlightedDesc}</div>
+                <div class="card-amount">${currencySymbol}${displayAmount}</div>
+            </div>
+            <div class="card-details">
+                <div class="card-detail-item">
+                    <svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                    <span>${transaction.date}</span>
+                </div>
+                <div class="card-detail-item">
+                    <svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /></svg>
+                    <span>${transaction.category}</span>
+                </div>
+            </div>
+            <div class="card-actions">
+                <button class="edit-btn secondary-btn" data-id="${transaction.id}">
+                    <svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                    Edit
+                </button>
+                <button class="delete-btn secondary-btn" data-id="${transaction.id}">
+                    <svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    Delete
+                </button>
+            </div>
+        `;
+
+    return card;
   }
 
   function createTransactionRow(transaction) {
     const row = document.createElement("tr");
     row.dataset.id = transaction.id;
 
+    // Get current search regex for highlighting
+    const regex = Search.getCurrentRegex();
+
+    // Highlight description
+    const highlightedDesc =
+      regex && !regex.error
+        ? Search.highlightText(transaction.description, regex)
+        : escapeHtml(transaction.description);
+
+    // Convert amount to selected currency
+    const currency = State.getCurrentCurrency();
+    const convertedAmount = State.convertAmount(transaction.amount, currency);
+    const currencySymbol = State.getCurrencySymbol(currency);
+
+    // Highlight amount (use original for search, converted for display)
+    const amountStr = transaction.amount.toFixed(2);
+    const highlightedAmount =
+      regex && !regex.error
+        ? Search.highlightText(amountStr, regex)
+        : amountStr;
+
+    // Display converted amount
+    const displayAmount = highlightedAmount.replace(
+      /[\d.]+/g,
+      convertedAmount.toFixed(2)
+    );
+
     row.innerHTML = `
             <td>${transaction.date}</td>
-            <td>${escapeHtml(transaction.description)}</td>
+            <td>${highlightedDesc}</td>
             <td>${transaction.category}</td>
-            <td>$${transaction.amount.toFixed(2)}</td>
+            <td>${currencySymbol}${displayAmount}</td>
             <td class="actions">
-                <button class="edit-btn" data-id="${
-                  transaction.id
-                }">✏️ Edit</button>
-                <button class="delete-btn" data-id="${
-                  transaction.id
-                }">🗑️ Delete</button>
+                <button class="edit-btn" data-id="${transaction.id}">
+                    <svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                    Edit
+                </button>
+                <button class="delete-btn" data-id="${transaction.id}">
+                    <svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    Delete
+                </button>
             </td>
         `;
-
     return row;
   }
 
@@ -175,16 +328,28 @@ const UI = (function () {
     const topCategoryAmount = document.getElementById("top-category-amount");
     const last7Days = document.getElementById("last-7-days");
 
+    // Get current currency
+    const currency = State.getCurrentCurrency();
+    const symbol = State.getCurrencySymbol(currency);
+
+    // Convert amounts
+    const convertedTotal = State.convertAmount(stats.totalAmount, currency);
+    const convertedTopAmount = State.convertAmount(
+      stats.topCategoryAmount,
+      currency
+    );
+    const convertedLast7 = State.convertAmount(stats.last7Days, currency);
+
     if (totalCount) totalCount.textContent = stats.totalCount;
     if (totalAmount)
-      totalAmount.textContent = "$" + stats.totalAmount.toFixed(2);
+      totalAmount.textContent = symbol + convertedTotal.toFixed(2);
     if (topCategory) topCategory.textContent = stats.topCategory || "None";
     if (topCategoryAmount) {
       topCategoryAmount.textContent = stats.topCategoryAmount
-        ? "$" + stats.topCategoryAmount.toFixed(2)
+        ? symbol + convertedTopAmount.toFixed(2)
         : "";
     }
-    if (last7Days) last7Days.textContent = "$" + stats.last7Days.toFixed(2);
+    if (last7Days) last7Days.textContent = symbol + convertedLast7.toFixed(2);
 
     // Update budget status
     updateBudgetStatus(stats.totalAmount);
@@ -212,6 +377,58 @@ const UI = (function () {
     }
   }
 
+  function renderChart(chartData) {
+    const chartContainer = document.getElementById("chart");
+
+    if (chartData.length === 0) {
+      chartContainer.innerHTML =
+        '<div class="chart-empty">No data for last 7 days</div>';
+      return;
+    }
+
+    // Get current currency for display
+    const currency = State.getCurrentCurrency();
+    const symbol = State.getCurrencySymbol(currency);
+
+    // Convert all amounts to selected currency
+    const convertedData = chartData.map((day) => ({
+      ...day,
+      originalAmount: day.amount,
+      amount: State.convertAmount(day.amount, currency),
+    }));
+
+    // Find max value for scaling
+    const maxAmount = Math.max(...convertedData.map((d) => d.amount));
+
+    // Clear and create bars
+    chartContainer.innerHTML = "";
+
+    convertedData.forEach((day) => {
+      const bar = document.createElement("div");
+      bar.className = "chart-bar";
+
+      // Calculate height as percentage of max (min 10% for visibility)
+      const heightPercent = maxAmount > 0 ? (day.amount / maxAmount) * 100 : 10;
+      bar.style.height = `${Math.max(heightPercent, 10)}%`;
+
+      // Add value label on bar (with converted amount)
+      if (day.amount > 0) {
+        const valueLabel = document.createElement("span");
+        valueLabel.className = "chart-bar-value";
+        valueLabel.textContent = `${symbol}${day.amount.toFixed(0)}`;
+        bar.appendChild(valueLabel);
+      }
+
+      // Add date label below bar
+      const label = document.createElement("div");
+      label.className = "chart-bar-label";
+      label.textContent = day.label;
+      bar.appendChild(label);
+
+      chartContainer.appendChild(bar);
+    });
+  }
+
   // PUBLIC API
 
   return {
@@ -225,5 +442,6 @@ const UI = (function () {
     renderTransactions,
     updateStats,
     updateBudgetStatus,
+    renderChart,
   };
 })();
