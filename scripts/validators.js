@@ -1,5 +1,11 @@
-// validators.js - Validation logic module (IIFE pattern)
-
+/*
+ validators.js - Validation logic module
+  
+ This module provides regex-based validation for all form inputs.
+ Uses IIFE (Immediately Invoked Function Expression) pattern for modularity.
+ 
+ Exports: Validators object with validation functions and regex patterns
+ */
 const Validators = (function () {
   "use strict";
 
