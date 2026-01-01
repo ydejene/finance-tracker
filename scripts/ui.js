@@ -1,4 +1,26 @@
-// ui.js - UI rendering and DOM manipulation module (IIFE pattern)
+/*
+ ui.js - User Interface and DOM Manipulation Module
+  
+ Handles all DOM interactions, rendering, and UI updates.
+ Separates presentation logic from business logic.
+  
+ Uses IIFE pattern for encapsulation.
+  
+ Exports: UI object with rendering and interaction functions
+  
+ * Key Responsibilities:
+ - Form management (show/hide, populate, validate display)
+ - Transaction rendering (table and card views)
+ - Stats dashboard updates
+ - Chart visualization
+ - Error message display
+  
+ Icon System:
+ - Uses inline SVG icons from Heroicons (MIT License)
+ - Icons embedded directly to avoid external dependencies
+  
+ Reference: Heroicons - https://heroicons.com (MIT License)
+ */
 
 const UI = (function () {
   "use strict";
