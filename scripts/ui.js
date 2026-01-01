@@ -217,21 +217,29 @@ const UI = (function () {
         ? Search.highlightText(transaction.description, regex)
         : escapeHtml(transaction.description);
 
-    // Convert amount to selected currency
+    // Get currency info
     const currency = State.getCurrentCurrency();
     const convertedAmount = State.convertAmount(transaction.amount, currency);
     const currencySymbol = State.getCurrencySymbol(currency);
 
-    const amountStr = transaction.amount.toFixed(2);
-    const highlightedAmount =
-      regex && !regex.error
-        ? Search.highlightText(amountStr, regex)
-        : amountStr;
+    // Format amounts
+    const originalAmountStr = transaction.amount.toFixed(2);
+    const convertedAmountStr = convertedAmount.toFixed(2);
 
-    const displayAmount = highlightedAmount.replace(
-      /[\d.]+/g,
-      convertedAmount.toFixed(2)
-    );
+    // Highlight ORIGINAL amount string (for search matching)
+    let displayAmount;
+    if (regex && !regex.error) {
+      // Check if regex matches the ORIGINAL amount
+      const tempRegex = new RegExp(regex.source, regex.flags);
+      if (tempRegex.test(originalAmountStr)) {
+        // Highlight the CONVERTED amount (visual)
+        displayAmount = `<mark>${convertedAmountStr}</mark>`;
+      } else {
+        displayAmount = convertedAmountStr;
+      }
+    } else {
+      displayAmount = convertedAmountStr;
+    }
 
     card.innerHTML = `
             <div class="card-header">
@@ -270,29 +278,35 @@ const UI = (function () {
     // Get current search regex for highlighting
     const regex = Search.getCurrentRegex();
 
-    // Highlight description
+    // Highlight description (original data)
     const highlightedDesc =
       regex && !regex.error
         ? Search.highlightText(transaction.description, regex)
         : escapeHtml(transaction.description);
 
-    // Convert amount to selected currency
+    // Get currency info
     const currency = State.getCurrentCurrency();
     const convertedAmount = State.convertAmount(transaction.amount, currency);
     const currencySymbol = State.getCurrencySymbol(currency);
 
-    // Highlight amount (use original for search, converted for display)
-    const amountStr = transaction.amount.toFixed(2);
-    const highlightedAmount =
-      regex && !regex.error
-        ? Search.highlightText(amountStr, regex)
-        : amountStr;
+    // Format amounts
+    const originalAmountStr = transaction.amount.toFixed(2);
+    const convertedAmountStr = convertedAmount.toFixed(2);
 
-    // Display converted amount
-    const displayAmount = highlightedAmount.replace(
-      /[\d.]+/g,
-      convertedAmount.toFixed(2)
-    );
+    // Highlight ORIGINAL amount string (for search matching)
+    let displayAmount;
+    if (regex && !regex.error) {
+      // Check if regex matches the ORIGINAL amount
+      const tempRegex = new RegExp(regex.source, regex.flags);
+      if (tempRegex.test(originalAmountStr)) {
+        // Highlight the CONVERTED amount (visual)
+        displayAmount = `<mark>${convertedAmountStr}</mark>`;
+      } else {
+        displayAmount = convertedAmountStr;
+      }
+    } else {
+      displayAmount = convertedAmountStr;
+    }
 
     row.innerHTML = `
             <td>${transaction.date}</td>
@@ -310,6 +324,7 @@ const UI = (function () {
                 </button>
             </td>
         `;
+
     return row;
   }
 
