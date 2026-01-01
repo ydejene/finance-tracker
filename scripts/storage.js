@@ -1,4 +1,15 @@
-// storage.js - LocalStorage management module (IIFE pattern)
+/**
+ storage.js - LocalStorage Management Module
+  
+ Handles all data persistence operations using browser's localStorage API.
+ Provides functions for saving/loading transactions and settings,as well as JSON import/export with validation.
+  
+ Uses IIFE (Immediately Invoked Function Expression) pattern for modularity.
+  
+ Exports: Storage object with persistence functions
+  
+ Browser Compatibility: localStorage is supported in all modern browsers (IE8+)
+ */
 
 const Storage = (function () {
   "use strict";
