@@ -2,9 +2,11 @@
 
 A responsive web application for tracking student expenses with regex-powered search, real-time validation, and accessible design.
 
-**Live Demo:** [GitHub Pages URL - Add after deployment]
+**Live Demo:** https://ydejene.github.io/finance-tracker/
 
-**Repository:** [Your GitHub Repo URL]
+**Repository:** https://github.com/ydejene/finance-tracker.git
+
+**Demo Video:** [Watch 3-minute Demo](https://youtu.be/EYsriEsdthE)
 
 ---
 
