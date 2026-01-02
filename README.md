@@ -286,49 +286,6 @@ Tests cover:
 - 5 category validation cases
 - **Total: 25 test cases** with 100% pass rate
 
-### Manual Testing Checklist
-
-**Functionality:**
-- [ ] Add transaction with valid data
-- [ ] Edit existing transaction
-- [ ] Delete transaction (with confirmation)
-- [ ] Sort by date, description, amount
-- [ ] Toggle ascending/descending
-- [ ] Search with various regex patterns
-- [ ] Invalid regex shows error message
-- [ ] Highlighting works on search matches
-- [ ] Export transactions to JSON
-- [ ] Import transactions from JSON
-- [ ] Load sample data (12 transactions)
-- [ ] Set budget cap and see status change
-- [ ] Data persists after page refresh
-
-**Responsiveness:**
-- [ ] Test at 360px (mobile) - cards view
-- [ ] Test at 768px (tablet) - 2-column stats
-- [ ] Test at 1024px+ (desktop) - 4-column stats, table view
-- [ ] Test at intermediate sizes
-
-**Accessibility:**
-- [ ] Navigate entire app using only keyboard
-- [ ] All interactive elements reachable via Tab
-- [ ] Focus indicators clearly visible
-- [ ] Modal closes with Escape key
-- [ ] Form submission works with Enter key
-- [ ] Error messages announced (use screen reader if available)
-
-**Edge Cases:**
-- [ ] Empty state (no transactions)
-- [ ] Very long description (truncation/wrapping)
-- [ ] Zero amount transaction
-- [ ] Large amounts (1000+)
-- [ ] Today's date (should work)
-- [ ] Future date (should be rejected)
-- [ ] Invalid JSON import
-- [ ] Duplicate word in description
-
----
-
 ## Project Structure
 ```
 finance-tracker/
