@@ -326,6 +326,7 @@ ui.js → depends on → Search
 state.js → depends on → Storage
 (All others are independent)
 ```
+---
 
 ## Citations
 
