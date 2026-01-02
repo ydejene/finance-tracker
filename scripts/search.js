@@ -1,5 +1,21 @@
-// search.js - Regex search and highlighting module (IIFE pattern)
-
+/*
+ search.js - Regex Search and Highlighting Module
+  
+ Provides regex compilation, transaction filtering, and text highlighting.
+ Handles invalid regex patterns gracefully with error messages.
+  
+ Uses IIFE pattern for encapsulation.
+  
+ Exports: Search object with search and highlight functions
+  
+ Key Features:
+ - Safe regex compilation with try/catch
+ - Multi-field search (description, amount, category, date)
+ - HTML-safe highlighting with <mark> tags
+ - Case-sensitive/insensitive toggle support
+  
+ Reference: MDN Regular Expressions Guide
+ */
 const Search = (function () {
   "use strict";
 

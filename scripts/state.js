@@ -1,5 +1,18 @@
-// state.js - Application state management module (IIFE pattern)
-
+/**
+ state.js - Application State Management Module
+  
+ Centralized state management for the entire application.
+ Manages transactions, settings, UI state (editing, sorting, filtering).
+ Acts as the single source of truth for application data.
+  
+ Uses IIFE pattern for encapsulation and module pattern.
+  
+ Exports: State object with getter/setter methods
+  
+ Data Flow:
+ Storage (localStorage) → State (in-memory) → UI (rendering)
+ User Actions → State (updates) → Storage (persistence) → UI (re-render)
+ */
 const State = (function () {
   "use strict";
 

@@ -1,4 +1,33 @@
-// app.js - Main application controller (wires everything together)
+/**
+ app.js - Main Application Controller
+  
+ Central event handling and application flow coordination.
+ Wires together all modules (State, UI, Validators, Storage, Search).
+  
+ Uses IIFE pattern to avoid global namespace pollution.
+ 
+ Application Architecture:
+ User Action → Event Handler (app.js) → State Update (state.js) → Storage Persistence (storage.js) → UI Re-render (ui.js)
+
+Module Dependencies:
+- Validators: Form validation and regex patterns
+- Storage: LocalStorage operations
+- State: Application state management
+- Search: Regex search and highlighting
+- UI: DOM manipulation and rendering
+
+Initialization Flow:
+ - DOMContentLoaded event fires
+ - init() called
+ - State loads from localStorage
+ - Icons initialized
+ - Settings UI populated
+ - Initial render
+ - Event listeners attached
+
+Event Handling Pattern:
+ -Each user interaction has a dedicated handler function that coordinates state updates and UI re-renders.
+*/
 
 (function () {
   "use strict";
