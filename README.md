@@ -327,6 +327,12 @@ state.js → depends on → Storage
 (All others are independent)
 ```
 
+## Citations
+
+See [CITATIONS.md](CITATIONS.md) for a complete list of external resources, references, and attributions used in this project.
+
+---
+
 ## Author
 
 **Yonas Getachew Dejene**
