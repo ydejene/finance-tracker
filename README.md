@@ -329,7 +329,7 @@ state.js → depends on → Storage
 
 ## Author
 
-**Your Name**
+**Yonas Getachew Dejene**
 - Email: y.dejene@alustudent.com
 - GitHub: [@ydejene](https://github.com/ydejene)
 
