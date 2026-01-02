@@ -286,6 +286,8 @@ Tests cover:
 - 5 category validation cases
 - **Total: 25 test cases** with 100% pass rate
 
+---
+
 ## Project Structure
 ```
 finance-tracker/
@@ -307,6 +309,8 @@ finance-tracker/
 │
 └── assets/                 # (Optional) Images, icons, etc.
 ```
+
+---
 
 ### Module Architecture (IIFE Pattern)
 
